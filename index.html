@@ -2,298 +2,103 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>METELARPWORLD</title>
+    <title>Экран загрузки</title>
+    <!-- Подключаем крутой жирный шрифт от Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; }
-        
-        body {
-            background: #050608;
-            color: #fff;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 60px;
-        }
-
-        /* Живой фон */
-        .bg-video {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover;
-            z-index: 1;
-            pointer-events: none;
-            filter: brightness(0.2) contrast(1.1);
-        }
-
-        .vignette {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 2;
-            background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.9) 100%);
-            pointer-events: none;
-        }
-
-        /* ==================================================== */
-        /* КРАСИВЫЙ ЭКРАН ВСТУПЛЕНИЯ (INTRO ИНТЕРФЕЙС) */
-        /* ==================================================== */
-        .intro-screen {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #050608;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            opacity: 1;
-            transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1), pointer-events 1.5s;
-        }
-
-        /* Логотип в интро с эффектом неонового появления */
-        .intro-logo {
-            font-size: 64px;
-            font-weight: 900;
-            letter-spacing: 8px;
-            text-transform: uppercase;
-            color: #fff;
-            text-shadow: 0 0 30px rgba(0, 168, 204, 0.8);
-            background: linear-gradient(135deg, #fff 40%, #00a8cc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: introFadeIn 2s ease-out forwards;
-            margin-bottom: 20px;
-        }
-
-        /* Футуристичный круговой загрузчик для интро */
-        .intro-spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(0, 168, 204, 0.1);
-            border-radius: 50%;
-            border-top-color: #00a8cc;
-            animation: spin 1s linear infinite;
-            box-shadow: 0 0 15px rgba(0, 168, 204, 0.4);
-        }
-
-        /* Класс, который уберет интро заставку через скрипт */
-        .intro-screen.hide {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        /* АНИМАЦИИ ДЛЯ ИНТРО */
-        @keyframes introFadeIn {
-            0% { opacity: 0; transform: scale(0.95); filter: blur(10px); }
-            100% { opacity: 1; transform: scale(1); filter: blur(0); }
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* ==================================================== */
-        /* ОСНОВНОЙ ИНТЕРФЕЙС (ПЛАВНО ПОЯВЛЯЕТСЯ ПОСЛЕ ИНТРО) */
-        /* ==================================================== */
-        .top-panel, .main-content, .bottom-panel {
-            position: relative;
-            z-index: 3;
+        body, html {
+            margin: 0;
+            padding: 0;
             width: 100%;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: opacity 1s ease 0.5s, transform 1s ease 0.5s;
-        }
-
-        body.ready .top-panel, 
-        body.ready .main-content, 
-        body.ready .bottom-panel {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .logo-area h1 {
-            font-size: 42px;
-            font-weight: 800;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: #fff;
-            text-shadow: 0 0 20px rgba(0, 168, 204, 0.6);
-            background: linear-gradient(135deg, #fff 30%, #00a8cc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .server-contact {
-            font-size: 13px;
-            color: #00a8cc;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 600;
-            margin-top: 5px;
-        }
-
-        .user-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            padding: 12px 20px;
-            border-radius: 12px;
-            text-align: right;
-        }
-
-        #username { font-size: 16px; font-weight: 600; color: #fff; }
-        #steamid { font-size: 11px; color: #666; font-family: monospace; margin-top: 2px; }
-
-        .main-content {
-            display: flex;
-            gap: 25px;
-            margin: auto 0;
-        }
-
-        .widget {
-            flex: 1;
-            background: rgba(15, 16, 20, 0.75);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            padding: 25px;
-            border-radius: 16px;
-            min-height: 110px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .widget-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            color: #666;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            margin-bottom: 8px;
-        }
-
-        .widget-value {
-            font-size: 24px;
-            color: #fff;
-            font-weight: 600;
-            line-height: 1.2;
-        }
-
-        .status-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        #status { font-size: 14px; color: #888; font-weight: 500; }
-        #percent { font-size: 26px; font-weight: 700; color: #00a8cc; font-family: monospace; }
-
-        .progress-track {
-            width: 100%; height: 6px;
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 10px;
+            height: 100%;
+            background-color: #000;
             overflow: hidden;
+            font-family: 'Russo One', sans-serif;
         }
 
-        .progress-fill {
-            width: 0%; height: 100%;
-            background: linear-gradient(90deg, #00a8cc, #00ffcc);
-            box-shadow: 0 0 20px rgba(0, 168, 204, 0.6);
-            border-radius: 10px;
-            transition: width 0.2s ease;
+        /* Задний фон с картинкой */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Указываем точное название твоей картинки */
+            background-image: url('994310423996056894.jpg'); 
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+            /* Слегка затемняем фон, чтобы текст читался лучше */
+            filter: brightness(0.6); 
         }
 
-        /* Стильное описание под полосой загрузки */
-        .server-description {
-            margin-top: 15px;
-            font-size: 13px;
-            color: #555e6b;
+        /* Контейнер для текста по центру */
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
             text-align: center;
-            letter-spacing: 0.5px;
-            line-height: 1.4;
+            width: 100%;
+        }
+
+        /* Крутая светящаяся надпись */
+        h1 {
+            color: #ffffff;
+            font-size: 4.5vw; /* Размер адаптируется под экран */
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            /* Неоновое зелено-синее свечение под стиль свина */
+            text-shadow: 0 0 10px #00ff40, 0 0 20px #00ff40, 0 0 40px #00aaff, 0 0 80px #00aaff;
+            animation: pulse 2s infinite alternate;
+        }
+
+        /* Анимация пульсации текста */
+        @keyframes pulse {
+            0% { 
+                text-shadow: 0 0 10px #00ff40, 0 0 20px #00ff40, 0 0 40px #00aaff; 
+                transform: scale(1); 
+            }
+            100% { 
+                text-shadow: 0 0 20px #00ff40, 0 0 40px #00ff40, 0 0 60px #00aaff, 0 0 100px #00aaff; 
+                transform: scale(1.05); 
+            }
+        }
+
+        /* Текст статуса загрузки файлов */
+        #status {
+            color: #cccccc;
+            font-size: 24px;
+            margin-top: 30px;
+            text-shadow: 1px 1px 5px #000000;
+            font-family: sans-serif;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <!-- ЭКРАН КРАСИВОГО ИНТРО (ИСЧЕЗНЕТ ЧЕРЕЗ 3 СЕКУНДЫ) -->
-    <div id="intro" class="intro-screen">
-        <div class="intro-logo">Metelarpworld</div>
-        <div class="intro-spinner"></div>
+    <div class="background"></div>
+    
+    <div class="content">
+        <h1>Добро пожаловать<br>на наш сервер</h1>
+        <div id="status">Подключение к серверу...</div>
     </div>
 
-    <!-- Живой фон страницы -->
-    <video class="bg-video" autoplay loop muted playsinline>
-        <source src="https://mixkit.co" type="video/mp4">
-    </video>
-    <div class="vignette"></div>
-
-    <!-- ТОП ПАНЕЛЬ -->
-    <div class="top-panel">
-        <div>
-            <h1>Metelarworld</h1>
-            <div class="server-contact">Discord: discord.gg/metel</div>
-        </div>
-        <div class="user-card">
-            <div id="username">Подключение...</div>
-            <div id="steamid">STEAM_0:0:00000000</div>
-        </div>
-    </div>
-
-    <!-- СРЕДНЯЯ ПАНЕЛЬ С ДАННЫМИ -->
-    <div class="main-content">
-        <div class="widget">
-            <div class="widget-label">Игровая карта</div>
-            <div id="map" class="widget-value">Загрузка...</div>
-        </div>
-        <div class="widget">
-            <div class="widget-label">Слоты сервера</div>
-            <div id="slots" class="widget-value">—</div>
-        </div>
-        <div class="widget">
-            <div class="widget-label">Режим игры</div>
-            <div id="gamemode" class="widget-value">—</div>
-        </div>
-        <div class="widget">
-            <div class="widget-label">Осталось файлов</div>
-            <div id="files-count" class="widget-value">0</div>
-        </div>
-    </div>
-
-    <!-- НИЖНЯЯ ПАНЕЛЬ (СТАТУС И ПРОГРЕСС) -->
-    <div class="bottom-panel">
-        <div class="status-row">
-            <span id="status">Инициализация игровых ресурсов...</span>
-            <span id="percent">0%</span>
-        </div>
-        <div class="progress-track">
-            <div id="progress" class="progress-fill"></div>
-        </div>
-        <!-- Само описание (можешь изменить текст на свой внутри тега p) -->
-        <p class="server-description">Добро пожаловать на METELARPWORLD. Пожалуйста, дождитесь окончания загрузки всех текстур, моделей и скриптов для стабильной игры без ошибок.</p>
-    </div>
-
+    <!-- Скрипты для связи с движком Garry's Mod -->
     <script>
-        // Убираем интро через 3 секунды
-        setTimeout(function() {
-            document.getElementById('intro').classList.add('hide');
-            document.body.classList.add('ready');
-        }, 3000);
-
-        let totalFiles = 0;
-
-        function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
-            document.getElementById('map').innerText = mapname;
-            document.getElementById('slots').innerText = maxplayers;
-            document.getElementById('gamemode').innerText = gamemode;
-            document.getElementById('steamid').innerText = steamid;
-            
-            if(window.gmod && typeof gmod.GetPlayerName === "function") {
-                document.getElementById('username').innerText = gmod.GetPlayerName();
-            } else {
-                document.getElementById('username').innerText = "Авторизация";
-            }
+        // Эта функция срабатывает, когда качается конкретный файл аддона
+        function DownloadingFile( fileName ) {
+            document.getElementById('status').innerText = "Скачивание: " + fileName;
         }
+        
+        // Эта функция срабатывает при смене статуса (например "Sending client info")
+        function SetStatusChanged( status ) {
+            document.getElementById('status').innerText = status;
+        }
+    </script>
 
+</body>
+</html>
