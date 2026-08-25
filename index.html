@@ -255,7 +255,6 @@
 
     <!-- СЛАЙДЕР С КАРТИНКАМИ ФОНА -->
     <div class="bg-slider">
-        <!-- Замени ссылки ниже на свои картинки -->
         <div class="bg-slide active" style="background-image: url('https://i.pinimg.com/736x/3c/b9/fa/3cb9fa7e38f3f61b74cecbfff4845a59.jpg');"></div>
         <div class="bg-slide" style="background-image: url('https://i.pinimg.com/1200x/5a/ef/3f/5aef3fb19d278dc7a2c2480012654aaf.jpg');"></div>
         <div class="bg-slide" style="background-image: url('https://i.pinimg.com/736x/60/ac/88/60ac885357e2dd6e2a2f5e90e47af241.jpg');"></div>
@@ -281,7 +280,7 @@
             <div id="map" class="widget-value">Загрузка...</div>
         </div>
         <div class="widget">
-            <div class="widget-label">Слоты сервера</div>
+            <div class="widget-label">Макс. игроков</div>
             <div id="slots" class="widget-value">—</div>
         </div>
         <div class="widget">
@@ -342,9 +341,12 @@
             slides[currentSlide].classList.add('active');
         }, 5000);
 
+        // ==========================================
         // Garry's Mod API Hooks
-        let totalFilesNeeded = 0;
-        let filesNeededLeft = 0;
+        // ==========================================
+        
+        let filesTotal = 0;
+        let filesNeeded = 0;
 
         function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
             document.getElementById('map').innerText = mapname || "Unknown";
@@ -353,35 +355,51 @@
             document.getElementById('steamid').innerText = steamid || "STEAM_0:0:00000000";
         }
 
+        // Вызывается GMod, когда известно ОБЩЕЕ количество файлов для загрузки
+        function SetFilesTotal(total) {
+            filesTotal = total;
+            updateFileDisplay();
+        }
+
+        // Вызывается GMod, передает сколько файлов ОСТАЛОСЬ загрузить
         function SetFilesNeeded(needed) {
-            totalFilesNeeded = needed;
-            filesNeededLeft = needed;
+            filesNeeded = needed;
             updateFileDisplay();
         }
 
-        function SetFilesRemaining(left) {
-            filesNeededLeft = left;
-            updateFileDisplay();
-        }
-
+        // Изменение статуса загрузки (например, Sending Client Info)
         function SetStatusChanged(status) {
             document.getElementById('status').innerText = status;
         }
 
-        function updateFileDisplay() {
-            let downloaded = totalFilesNeeded - filesNeededLeft;
-            document.getElementById('files-count').innerText = downloaded + " / " + totalFilesNeeded;
-            
-            let percentage = 0;
-            if (totalFilesNeeded > 0) {
-                percentage = Math.floor((downloaded / totalFilesNeeded) * 100);
-            }
-            document.getElementById('percent').innerText = percentage + "%";
-            document.getElementById('progress').style.width = percentage + "%";
+        // Вызывается при старте загрузки конкретного файла
+        function DownloadingFile(fileName) {
+            document.getElementById('status').innerText = "Загрузка: " + fileName;
         }
 
-        function SetDownloadingFile(fileName) {
-            document.getElementById('status').innerText = "Загрузка: " + fileName;
+        // Функция обновления прогресс-бара и процентов
+        function updateFileDisplay() {
+            // Если файлов нет или они уже скачаны, показываем 100%
+            if (filesTotal === 0) {
+                document.getElementById('files-count').innerText = "0 / 0";
+                document.getElementById('percent').innerText = "100%";
+                document.getElementById('progress').style.width = "100%";
+                return;
+            }
+
+            let downloaded = filesTotal - filesNeeded;
+            if (downloaded < 0) downloaded = 0;
+
+            document.getElementById('files-count').innerText = downloaded + " / " + filesTotal;
+            
+            let percentage = Math.floor((downloaded / filesTotal) * 100);
+            
+            // Защита от выхода за пределы 0-100%
+            if (percentage > 100) percentage = 100;
+            if (percentage < 0) percentage = 0;
+
+            document.getElementById('percent').innerText = percentage + "%";
+            document.getElementById('progress').style.width = percentage + "%";
         }
     </script>
 </body>
